@@ -8,48 +8,27 @@ contract Voting {
         uint voteCount;
     }
 
-    struct Voter {
-        bool voted;
-        uint vote;
-        uint weight;
-    }
-
-    address public chairperson;
-    mapping(address => Voter) public voters;
+    mapping(address => bool) public voters;
     Proposal[] public proposals;
 
     event ProposalAdded(string proposalName, string proposalImage);
 
-    constructor() {
-        chairperson = msg.sender;
-        voters[chairperson].weight = 1;
-    }
-
     function addProposal(string memory proposalName, string memory proposalImage) public {
-        require(msg.sender == chairperson, "Only chairperson can add proposals.");
+        require(!voters[msg.sender], "You have already voted.");
         proposals.push(Proposal({
         name: proposalName,
-        image: proposalImage, // Initialisation du champ d'image
+        image: proposalImage,
         voteCount: 0
         }));
         emit ProposalAdded(proposalName, proposalImage);
     }
 
-    function giveRightToVote(address voter) public {
-        require(msg.sender == chairperson, "Only chairperson can give right to vote.");
-        require(!voters[voter].voted, "The voter already voted.");
-        require(voters[voter].weight == 0);
-        voters[voter].weight = 1;
-    }
+    function vote(uint256 _candidateIndex) public {
+        require(!voters[msg.sender], "You have already voted.");
+        require(_candidateIndex < proposals.length, "Invalid candidate index.");
 
-    function vote(uint proposal) public {
-        Voter storage sender = voters[msg.sender];
-        require(sender.weight != 0, "Has no right to vote.");
-        require(!sender.voted, "Already voted.");
-        sender.voted = true;
-        sender.vote = proposal;
-
-        proposals[proposal].voteCount += sender.weight;
+        proposals[_candidateIndex].voteCount++;
+        voters[msg.sender] = true;
     }
 
     function winningProposal() public view returns (uint winningProposal_) {
@@ -68,13 +47,13 @@ contract Voting {
 
     function getProposals() public view returns (string[] memory names, string[] memory images, uint[] memory voteCounts) {
         names = new string[](proposals.length);
-        images = new string[](proposals.length); // Ajout du tableau d'images
+        images = new string[](proposals.length);
         voteCounts = new uint[](proposals.length);
 
         for (uint i = 0; i < proposals.length; i++) {
             Proposal storage proposal = proposals[i];
             names[i] = proposal.name;
-            images[i] = proposal.image; // Remplissage du tableau d'images
+            images[i] = proposal.image;
             voteCounts[i] = proposal.voteCount;
         }
     }
