@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 contract Voting {
     struct Proposal {
         string name;
+        string image; // Ajout du champ d'image
         uint voteCount;
     }
 
@@ -17,20 +18,21 @@ contract Voting {
     mapping(address => Voter) public voters;
     Proposal[] public proposals;
 
-    event ProposalAdded(string proposalName);
+    event ProposalAdded(string proposalName, string proposalImage);
 
     constructor() {
         chairperson = msg.sender;
         voters[chairperson].weight = 1;
     }
 
-    function addProposal(string memory proposalName) public {
+    function addProposal(string memory proposalName, string memory proposalImage) public {
         require(msg.sender == chairperson, "Only chairperson can add proposals.");
         proposals.push(Proposal({
         name: proposalName,
+        image: proposalImage, // Initialisation du champ d'image
         voteCount: 0
         }));
-        emit ProposalAdded(proposalName);
+        emit ProposalAdded(proposalName, proposalImage);
     }
 
     function giveRightToVote(address voter) public {
@@ -64,13 +66,15 @@ contract Voting {
         winnerName_ = proposals[winningProposal()].name;
     }
 
-    function getProposals() public view returns (string[] memory names, uint[] memory voteCounts) {
+    function getProposals() public view returns (string[] memory names, string[] memory images, uint[] memory voteCounts) {
         names = new string[](proposals.length);
+        images = new string[](proposals.length); // Ajout du tableau d'images
         voteCounts = new uint[](proposals.length);
 
         for (uint i = 0; i < proposals.length; i++) {
             Proposal storage proposal = proposals[i];
             names[i] = proposal.name;
+            images[i] = proposal.image; // Remplissage du tableau d'images
             voteCounts[i] = proposal.voteCount;
         }
     }
