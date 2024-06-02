@@ -60,11 +60,9 @@ contract Voting {
     function deleteProposal(uint _proposalIndex) public {
         require(_proposalIndex < proposals.length, "Invalid proposal index");
 
-        // Déplacer la dernière proposition à la place de celle que nous voulons supprimer
         uint lastIndex = proposals.length - 1;
         proposals[_proposalIndex] = proposals[lastIndex];
 
-        // Supprimer la dernière proposition du tableau
         proposals.pop();
 
         emit ProposalDeleted(_proposalIndex);
