@@ -12,7 +12,7 @@ contract Voting {
     Proposal[] public proposals;
 
     event ProposalAdded(string proposalName, string proposalImage);
-
+    event ProposalDeleted(uint proposalIndex);
     function addProposal(string memory proposalName, string memory proposalImage) public {
         require(!voters[msg.sender], "You have already voted.");
         proposals.push(Proposal({
@@ -57,4 +57,17 @@ contract Voting {
             voteCounts[i] = proposal.voteCount;
         }
     }
+    function deleteProposal(uint _proposalIndex) public {
+        require(_proposalIndex < proposals.length, "Invalid proposal index");
+
+        // Déplacer la dernière proposition à la place de celle que nous voulons supprimer
+        uint lastIndex = proposals.length - 1;
+        proposals[_proposalIndex] = proposals[lastIndex];
+
+        // Supprimer la dernière proposition du tableau
+        proposals.pop();
+
+        emit ProposalDeleted(_proposalIndex);
+    }
+
 }
