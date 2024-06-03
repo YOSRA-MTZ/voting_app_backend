@@ -14,7 +14,6 @@ contract Voting {
     event ProposalAdded(string proposalName, string proposalImage);
     event ProposalDeleted(uint proposalIndex);
     function addProposal(string memory proposalName, string memory proposalImage) public {
-        require(!voters[msg.sender], "You have already voted.");
         proposals.push(Proposal({
         name: proposalName,
         image: proposalImage,
