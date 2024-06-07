@@ -1,1 +1,1 @@
-# voting app with Solidity 
+# Développement d'une dApp de Vote avec React, Hardhat, Ethereum et IPFS
